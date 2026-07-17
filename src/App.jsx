@@ -39,6 +39,9 @@ const sections = [
     p('Papas a la Francesa (250 g)|Papas clásicas|420|5|4|79|55.3'),
     p('Crisscut Fries (250 g)|Papas crisscut|470|6|4|99|69.3'),
     p('Chicken Nuggets (12 piezas / 200 g)|Nuggets dorados|540|26|2|109|76.3'),
+    p('Boneless (250 g)|Boneless crujientes en air fryer · valores aproximados|590|33|2|149|149'),
+    p('Alitas de Pollo (6 piezas)|Alitas crujientes en air fryer · valores aproximados|470|37|0|79|79'),
+    p('Alitas de Pollo (12 piezas)|Alitas crujientes en air fryer · valores aproximados|940|74|0|149|149'),
     p('Combo Papas + Chicken Nuggets|250 g de papas + 12 nuggets|960|31|6|179|125.3'),
     p('Combo Crisscut + Chicken Nuggets|250 g de crisscut + 12 nuggets|1010|32|6|189|132.3'),
     p('Mini Wontons de Pollo y Cilantro|12 piezas / 170-180 g|360|18|2|129|90.3'),
@@ -83,13 +86,17 @@ const extras = [
 const imageMap = {
   'Smoothie de Plátano Protein':'smoothie-banana','Smoothie de Mango Protein':'smoothie-mango','Smoothie de Fresa Protein':'smoothie-fresa','Smoothie de Arándano Protein':'smoothie-arandano','Smoothie de Frutos Rojos Protein':'smoothie-frutos-rojos','Smoothie Berry Mango Protein':'smoothie-berry-mango','Smoothie Berry Happy Protein':'smoothie-berry-happy','Smoothie Matcha Love Protein':'smoothie-matcha-love','Smoothie Cacao Protein':'smoothie-cacao',
   'Hash Browns (2 piezas)':'hash-browns','Hash Browns + Huevo Entero Revuelto':'hash-egg','Hash Browns + Claras Revueltas':'hash-whites','2 Huevos Cocidos':'boiled-eggs','Revuelto de Huevo Entero':'scrambled-egg','Revuelto de Claras':'scrambled-whites','Huevo Entero + 5 Tortillas':'egg-tortillas','Claras + 5 Tortillas':'whites-tortillas',
-  'Papas a la Francesa (250 g)':'fries','Crisscut Fries (250 g)':'crisscut','Chicken Nuggets (12 piezas / 200 g)':'nuggets','Combo Papas + Chicken Nuggets':'combo-fries-nuggets','Combo Crisscut + Chicken Nuggets':'combo-crisscut-nuggets','Mini Wontons de Pollo y Cilantro':'wontons',
+  'Papas a la Francesa (250 g)':'fries','Crisscut Fries (250 g)':'crisscut','Chicken Nuggets (12 piezas / 200 g)':'nuggets','Boneless (250 g)':'nuggets','Alitas de Pollo (6 piezas)':'nuggets','Alitas de Pollo (12 piezas)':'nuggets','Combo Papas + Chicken Nuggets':'combo-fries-nuggets','Combo Crisscut + Chicken Nuggets':'combo-crisscut-nuggets','Mini Wontons de Pollo y Cilantro':'wontons',
   'Combo Pre-Workout':'coffee-creatine','Combo Desayuno Fit':'hash-egg','Combo Tortilla Power':'whites-tortillas','Combo Post-Workout':'combo-post-workout','Combo Snack Fit':'combo-snack-fit','Combo Recovery Light':'combo-recovery','Combo Energy Break':'energy-red',
   'Café Negro Caliente':'coffee-hot','Café Negro Frío':'coffee-cold','Creatina en Agua (5 g)':'creatine-water','Coca-Cola Sin Azúcar (355 ml)':'energy-red','Pepsi Black (355 ml)':'energy-black','Electrolit (625 ml)':'combo-recovery','Agua (600 ml)':'water','Red Bull (250 ml)':'energy-red','Monster Energy (473 ml)':'energy-black','Yogurt Alpura con Fresa':'yogurt-strawberry','Yogurt Alpura con Manzana':'yogurt-apple','Yogurt Alpura con Durazno':'yogurt-peach','Yakult (65 ml)':'yakult','Agua de Coco Orgánica (330 ml)':'coconut-water','Chobani Protein Shake - Frutos Rojos y Vainilla':'yogurt-strawberry','Chobani Protein Shake - Fresas con Crema':'yogurt-strawberry',
   'Scoop Extra de Proteína':'extras-assortment','Proteína Vegana':'extras-assortment','Avena':'extras-assortment','Crema de Cacahuate':'extras-assortment','Chía':'extras-assortment','Canela':'extras-assortment','Extracto de Vainilla':'extras-assortment','Matcha':'extras-assortment','Creatina (5 g)':'creatine-water','Base Leche de Almendra':'coconut-water','Base Leche de Coco':'coconut-water',
 }
 const productImage = (name) => './assets/products/' + (imageMap[name] || 'extras-assortment') + '.png'
-const money = (value) => value == null ? 'Por confirmar' : '$' + value.toFixed(2)
+const money = (value) => Number.isFinite(value) ? '$' + value.toFixed(2) : 'Por confirmar'
+const priceLabel = (value) => {
+  const formatted = money(value)
+  return formatted === 'Por confirmar' ? formatted : formatted + ' MXN'
+}
 
 function QuantityRow({ item, quantity, onChange }) {
   return <div className={'product-row ' + (quantity ? 'is-selected' : '')}>
