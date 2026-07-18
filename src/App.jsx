@@ -188,7 +188,27 @@ function App() {
     </main>
     <footer><div className="footer-brand"><img src="./assets/protein-fit-logo.jpeg" alt="" /><div><strong>Protein Fit MTY</strong><span>Pickup disponible · DiDi Food · Rappi</span></div></div><div className="footer-contact"><div><span><MapPin /> Calle Tomás Treviño 216, CP 66413, San Nicolás de los Garza, N.L.</span><a className="instagram-profile" href="https://instagram.com/protein_fit_mty" target="_blank" rel="noreferrer"><FaInstagram /> @protein_fit_mty</a></div></div><span className="footer-secure"><ShieldCheck /> El total y disponibilidad se confirman por WhatsApp.</span></footer>
     <div className="floating-checkout"><div className="checkout-total"><small>{totals.items} {totals.items === 1 ? 'artículo' : 'artículos'}</small><strong>{money(totals.price)} MXN</strong>{totals.quote && <em>+ por confirmar</em>}</div><div className="checkout-nutrition"><span>{totals.calories} kcal</span><span>{totals.protein} g proteína</span></div><button className="review-button" type="button" onClick={() => setShowSummary(true)} disabled={!totals.items}><ShoppingBag /> Revisar</button><button className="whatsapp-button" type="button" onClick={sendOrder}><FaWhatsapp /> Ordenar por WhatsApp</button>{attempted && missing.length > 0 && <p className="floating-error">Falta: {missing.join(', ')}.</p>}</div>
-    {showSummary && <div className="summary-backdrop" onMouseDown={() => setShowSummary(false)}><aside className="summary-drawer" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}><div className="drawer-heading"><div><small>Tu pedido</small><h2>{totals.items} artículos</h2></div><button type="button" onClick={() => setShowSummary(false)} aria-label="Cerrar resumen"><X /></button></div><div className="drawer-items">{selectedItems.map((item) => <div key={item.name}><span><strong>{quantities[item.name]} × {item.name}</strong><small>{item.calories ?? 0} kcal · {item.protein ?? 0} g proteína c/u</small></span><b>{item.promo == null ? 'Por confirmar' : money(item.promo * quantities[item.name])}</b></div>)}</div><div className="drawer-totals"><span><small>Total promo estimado</small><strong>{money(totals.price)} MXN</strong></span><span><small>Nutrición estimada</small><strong>{totals.calories} kcal · {totals.protein} g proteína</strong></span></div><button className="whatsapp-button" type="button" onClick={sendOrder}><FaWhatsapp /> Ordenar por WhatsApp</button></aside></div>}
+    {showSummary && <div className="summary-backdrop" onMouseDown={() => setShowSummary(false)}>
+      <aside className="summary-drawer" role="dialog" aria-modal="true" aria-label="Revisar pedido" onMouseDown={(e) => e.stopPropagation()}>
+        <div className="drawer-heading"><div><small>Tu pedido</small><h2>{totals.items} artículos</h2></div><button type="button" onClick={() => setShowSummary(false)} aria-label="Cerrar resumen"><X /></button></div>
+        <div className="drawer-items">
+          {selectedItems.length ? selectedItems.map((item) => <div className="drawer-item" key={item.name}>
+            <span className="drawer-item-copy"><strong>{item.name}</strong><small>{item.calories ?? 0} kcal · {item.protein ?? 0} g proteína c/u</small></span>
+            <div className="drawer-item-actions">
+              <div className="drawer-quantity" aria-label={'Cantidad de ' + item.name}>
+                <button type="button" onClick={() => changeQuantity(item.name, -1)} aria-label={'Quitar una unidad de ' + item.name}><Minus size={15} /></button>
+                <input type="number" min="0" max="99" value={quantities[item.name] || 0} onChange={(e) => changeQuantity(item.name, Math.max(0, Number(e.target.value) || 0) - (quantities[item.name] || 0))} aria-label={'Cantidad de ' + item.name} />
+                <button type="button" onClick={() => changeQuantity(item.name, 1)} aria-label={'Agregar una unidad de ' + item.name}><Plus size={15} /></button>
+              </div>
+              <b>{item.promo == null ? 'Por confirmar' : money(item.promo * quantities[item.name])}</b>
+            </div>
+          </div>) : <div className="drawer-empty"><ShoppingBag /><strong>Tu pedido está vacío</strong><small>Agrega productos para continuar.</small></div>}
+        </div>
+        <button className="drawer-add-more" type="button" onClick={() => setShowSummary(false)}><Plus size={16} /> Agregar más productos</button>
+        <div className="drawer-totals"><span><small>Total promo estimado</small><strong>{money(totals.price)} MXN</strong></span><span><small>Nutrición estimada</small><strong>{totals.calories} kcal · {totals.protein} g proteína</strong></span></div>
+        <button className="whatsapp-button" type="button" onClick={sendOrder} disabled={!totals.items}><FaWhatsapp /> Ordenar por WhatsApp</button>
+      </aside>
+    </div>}
   </div>
 }
 export default App
