@@ -76,12 +76,16 @@ const sections = [
 ]
 const extras = [
   p('Scoop Extra de Proteína|Extra para smoothie|120|24|0|60|42'),
-  p('Proteína Vegana|Sustituye proteína regular||||15|10.5'),
+  p('Proteína Vegana|Sustituye proteína regular||||75|52.5'),
   p('Avena|Extra|70|2|2|25|17.5'), p('Crema de Cacahuate|Extra|95|4|1|35|24.5'),
   p('Chía|Extra|60|2|5|10|7'), p('Canela|Extra|6|0|2|5|3.5'),
   p('Extracto de Vainilla|Extra|12|0|0|8|5.6'), p('Matcha|Extra|10|1|1|20|14'),
   p('Creatina (5 g)|Booster|20|0|0|25|17.5'), p('Base Leche de Almendra|Base vegana|40|1|1|12|8.4'),
   p('Base Leche de Coco|Base vegana|45|0|0|12|8.4'),
+  p('Base Leche de Soya|Base vegana||||12|8.4'),
+  p('Cáscara de Psyllium|Extra||||15|10.5'),
+  p('Miel|Extra||||15|10.5'),
+  p('Frutos Secos|Extra||||15|10.5'),
 ]
 const imageMap = {
   'Smoothie de Plátano Protein':'smoothie-banana','Smoothie de Mango Protein':'smoothie-mango','Smoothie de Fresa Protein':'smoothie-fresa','Smoothie de Arándano Protein':'smoothie-arandano','Smoothie de Frutos Rojos Protein':'smoothie-frutos-rojos','Smoothie Berry Mango Protein':'smoothie-berry-mango','Smoothie Berry Happy Protein':'smoothie-berry-happy','Smoothie Matcha Love Protein':'smoothie-matcha-love','Smoothie Cacao Protein':'smoothie-cacao',
@@ -89,7 +93,7 @@ const imageMap = {
   'Papas a la Francesa (250 g)':'fries','Crisscut Fries (250 g)':'crisscut','Chicken Nuggets (12 piezas / 200 g)':'nuggets','Boneless (250 g)':'boneless','Alitas de Pollo (6 piezas)':'alitas','Alitas de Pollo (12 piezas)':'alitas','Combo Papas + Chicken Nuggets':'combo-fries-nuggets','Combo Crisscut + Chicken Nuggets':'combo-crisscut-nuggets','Mini Wontons de Pollo y Cilantro':'wontons',
   'Combo Pre-Workout':'coffee-creatine','Combo Desayuno Fit':'hash-egg','Combo Tortilla Power':'whites-tortillas','Combo Post-Workout':'combo-post-workout','Combo Snack Fit':'combo-snack-fit','Combo Recovery Light':'combo-recovery','Combo Energy Break':'energy-red',
   'Café Negro Caliente':'coffee-hot','Café Negro Frío':'coffee-cold','Creatina en Agua (5 g)':'creatine-water','Coca-Cola Sin Azúcar (355 ml)':'energy-red','Pepsi Black (355 ml)':'energy-black','Electrolit (625 ml)':'combo-recovery','Agua (600 ml)':'water','Red Bull (250 ml)':'energy-red','Monster Energy (473 ml)':'energy-black','Yogurt Alpura con Fresa':'yogurt-strawberry','Yogurt Alpura con Manzana':'yogurt-apple','Yogurt Alpura con Durazno':'yogurt-peach','Yakult (65 ml)':'yakult','Agua de Coco Orgánica (330 ml)':'coconut-water','Chobani Protein Shake - Frutos Rojos y Vainilla':'yogurt-strawberry','Chobani Protein Shake - Fresas con Crema':'yogurt-strawberry',
-  'Scoop Extra de Proteína':'extras-assortment','Proteína Vegana':'extras-assortment','Avena':'extras-assortment','Crema de Cacahuate':'extras-assortment','Chía':'extras-assortment','Canela':'extras-assortment','Extracto de Vainilla':'extras-assortment','Matcha':'extras-assortment','Creatina (5 g)':'creatine-water','Base Leche de Almendra':'coconut-water','Base Leche de Coco':'coconut-water',
+  'Scoop Extra de Proteína':'extras-assortment','Proteína Vegana':'extras-assortment','Avena':'extras-assortment','Crema de Cacahuate':'extras-assortment','Chía':'extras-assortment','Canela':'extras-assortment','Extracto de Vainilla':'extras-assortment','Matcha':'extras-assortment','Creatina (5 g)':'creatine-water','Base Leche de Almendra':'coconut-water','Base Leche de Coco':'coconut-water','Base Leche de Soya':'coconut-water','Cáscara de Psyllium':'extras-assortment','Miel':'extras-assortment','Frutos Secos':'extras-assortment',
 }
 const productImage = (name) => './assets/products/' + (imageMap[name] || 'extras-assortment') + '.png'
 const money = (value) => Number.isFinite(value) ? '$' + value.toFixed(2) : 'Por confirmar'
