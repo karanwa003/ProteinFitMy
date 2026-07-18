@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { CalendarDays, Check, Crosshair, LoaderCircle, MapPin, Minus, Plus, ShieldCheck, ShoppingBag, UserRound, X } from 'lucide-react'
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa'
 
@@ -126,14 +126,28 @@ function App() {
   const [locationStatus, setLocationStatus] = useState('idle')
   const [showSummary, setShowSummary] = useState(false)
   const [attempted, setAttempted] = useState(false)
-  const allItems = useMemo(() => [...sections.flatMap((section) => section[3]), ...extras], [])
-  const selectedItems = useMemo(() => allItems.filter((item) => (quantities[item.name] || 0) > 0), [allItems, quantities])
-  const totals = useMemo(() => selectedItems.reduce((sum, item) => {
-    const qty = quantities[item.name]
-    return { items: sum.items + qty, price: sum.price + (item.promo || 0) * qty, calories: sum.calories + (item.calories || 0) * qty, protein: sum.protein + (item.protein || 0) * qty, fiber: sum.fiber + (item.fiber || 0) * qty, quote: sum.quote || item.promo == null }
-  }, { items: 0, price: 0, calories: 0, protein: 0, fiber: 0, quote: false }), [selectedItems, quantities])
+  const allItems = [...sections.flatMap((section) => section[3]), ...extras]
+  const selectedItems = allItems.filter((item) => Number(quantities[item.name] || 0) > 0)
+  const totals = allItems.reduce((sum, item) => {
+    const qty = Number(quantities[item.name] || 0)
+    if (qty <= 0) return sum
+    return {
+      items: sum.items + qty,
+      price: sum.price + Number(item.promo || 0) * qty,
+      calories: sum.calories + Number(item.calories || 0) * qty,
+      protein: sum.protein + Number(item.protein || 0) * qty,
+      fiber: sum.fiber + Number(item.fiber || 0) * qty,
+      quote: sum.quote || item.promo == null,
+    }
+  }, { items: 0, price: 0, calories: 0, protein: 0, fiber: 0, quote: false })
   const missing = [!totals.items && 'productos', !customer.name.trim() && 'nombre', !customer.address.trim() && 'dirección', !customer.date && 'fecha'].filter(Boolean)
-  const changeQuantity = (name, delta) => setQuantities((current) => ({ ...current, [name]: Math.max(0, Math.min(99, (current[name] || 0) + delta)) }))
+  const changeQuantity = (name, delta) => {
+    setQuantities((current) => {
+      const currentQuantity = Number(current[name] || 0)
+      const nextQuantity = Math.max(0, Math.min(99, currentQuantity + Number(delta || 0)))
+      return { ...current, [name]: nextQuantity }
+    })
+  }
 
   function requestLocation() {
     if (!navigator.geolocation) return setLocationStatus('unsupported')
@@ -187,12 +201,12 @@ function App() {
       </div>
     </main>
     <footer><div className="footer-brand"><img src="./assets/protein-fit-logo.jpeg" alt="" /><div><strong>Protein Fit MTY</strong><span>Pickup disponible · DiDi Food · Rappi</span></div></div><div className="footer-contact"><div><span><MapPin /> Calle Tomás Treviño 216, CP 66413, San Nicolás de los Garza, N.L.</span><a className="instagram-profile" href="https://instagram.com/protein_fit_mty" target="_blank" rel="noreferrer"><FaInstagram /> @protein_fit_mty</a></div></div><span className="footer-secure"><ShieldCheck /> El total y disponibilidad se confirman por WhatsApp.</span></footer>
-    <div className="floating-checkout"><div className="checkout-total"><small>{totals.items} {totals.items === 1 ? 'artículo' : 'artículos'}</small><strong>{money(totals.price)} MXN</strong>{totals.quote && <em>+ por confirmar</em>}</div><div className="checkout-nutrition"><span>{totals.calories} kcal</span><span>{totals.protein} g proteína</span></div><button className="review-button" type="button" onClick={() => setShowSummary(true)} disabled={!totals.items}><ShoppingBag /> Revisar</button><button className="whatsapp-button" type="button" onClick={sendOrder}><FaWhatsapp /> Ordenar por WhatsApp</button>{attempted && missing.length > 0 && <p className="floating-error">Falta: {missing.join(', ')}.</p>}</div>
+    {!showSummary && <div key={`${totals.items}-${totals.price}-${totals.calories}-${totals.protein}`} className="floating-checkout" aria-live="polite"><div className="checkout-total"><small>{totals.items} {totals.items === 1 ? 'artículo' : 'artículos'}</small><strong>{money(totals.price)} MXN</strong>{totals.quote && <em>+ por confirmar</em>}</div><div className="checkout-nutrition"><span>{totals.calories} kcal</span><span>{totals.protein} g proteína</span></div><button className="review-button" type="button" onClick={() => setShowSummary(true)} disabled={!totals.items}><ShoppingBag /> Revisar</button><button className="whatsapp-button" type="button" onClick={sendOrder}><FaWhatsapp /> Ordenar por WhatsApp</button>{attempted && missing.length > 0 && <p className="floating-error">Falta: {missing.join(', ')}.</p>}</div>}
     {showSummary && <div className="summary-backdrop" onMouseDown={() => setShowSummary(false)}>
       <aside className="summary-drawer" role="dialog" aria-modal="true" aria-label="Revisar pedido" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="drawer-heading"><div><small>Tu pedido</small><h2>{totals.items} artículos</h2></div><button type="button" onClick={() => setShowSummary(false)} aria-label="Cerrar resumen"><X /></button></div>
+        <div className="drawer-heading"><div><small>Tu pedido</small><h2 key={totals.items}>{totals.items} artículos</h2></div><button type="button" onClick={() => setShowSummary(false)} aria-label="Cerrar resumen"><X /></button></div>
         <div className="drawer-items">
-          {selectedItems.length ? selectedItems.map((item) => <div className="drawer-item" key={item.name}>
+          {selectedItems.length ? selectedItems.map((item) => <div className="drawer-item" key={`${item.name}-${quantities[item.name]}`}>
             <span className="drawer-item-copy"><strong>{item.name}</strong><small>{item.calories ?? 0} kcal · {item.protein ?? 0} g proteína c/u</small></span>
             <div className="drawer-item-actions">
               <div className="drawer-quantity" aria-label={'Cantidad de ' + item.name}>
@@ -205,7 +219,7 @@ function App() {
           </div>) : <div className="drawer-empty"><ShoppingBag /><strong>Tu pedido está vacío</strong><small>Agrega productos para continuar.</small></div>}
         </div>
         <button className="drawer-add-more" type="button" onClick={() => setShowSummary(false)}><Plus size={16} /> Agregar más productos</button>
-        <div className="drawer-totals"><span><small>Total promo estimado</small><strong>{money(totals.price)} MXN</strong></span><span><small>Nutrición estimada</small><strong>{totals.calories} kcal · {totals.protein} g proteína</strong></span></div>
+        <div key={`${totals.price}-${totals.calories}-${totals.protein}`} className="drawer-totals" aria-live="polite"><span><small>Total promo estimado</small><strong>{money(totals.price)} MXN</strong></span><span><small>Nutrición estimada</small><strong>{totals.calories} kcal · {totals.protein} g proteína</strong></span></div>
         <button className="whatsapp-button" type="button" onClick={sendOrder} disabled={!totals.items}><FaWhatsapp /> Ordenar por WhatsApp</button>
       </aside>
     </div>}
